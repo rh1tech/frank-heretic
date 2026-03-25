@@ -25,7 +25,6 @@
 #include <assert.h>
 
 #include "pico/mutex.h"
-#include "pico/audio_i2s.h"
 #include "pico/util/pheap.h"
 #include "hardware/gpio.h"
 #include "i_picosound.h"
@@ -291,13 +290,6 @@ void OPL_Pico_Mix_callback(audio_buffer_t *audio_buffer)
             AdvanceTime(nsamples);
         }
         audio_buffer->sample_count = audio_buffer->max_sample_count;
-#if !USE_WOODY_OPL
-        // Amplify by 8x for audible output
-        int16_t *samples = (int16_t *)audio_buffer->buffer->bytes;
-        for(uint i=0;i<audio_buffer->sample_count * 2; i++) {
-            samples[i] <<= 3;
-        }
-#endif
 //#if PICO_ON_DEVICE
 //        gpio_clr_mask(1);
 //        int32_t t = (int32_t)absolute_time_diff_us(t0, get_absolute_time());

@@ -26,22 +26,11 @@ message(STATUS "Board: ${BOARD_VARIANT}, CPU: ${CPU_SPEED} MHz, PSRAM: ${PSRAM_S
 
 include(pico_sdk_import.cmake)
 
-# Import pico-extras for audio_i2s library
-set(PICO_EXTRAS_PATH ${CMAKE_CURRENT_LIST_DIR}/pico-extras CACHE PATH "Path to pico-extras")
-if(EXISTS ${PICO_EXTRAS_PATH}/external/pico_extras_import.cmake)
-    include(${PICO_EXTRAS_PATH}/external/pico_extras_import.cmake)
-endif()
-
 project(murmheretic C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
 pico_sdk_init()
-
-# Initialize pico-extras if available
-if(COMMAND pico_extras_init)
-    pico_extras_init()
-endif()
 
 # Add fatfs
 add_subdirectory(src/fatfs)
@@ -65,170 +54,6 @@ target_compile_definitions(drivers PRIVATE
 )
 target_compile_options(drivers PRIVATE -Ofast)
 target_link_libraries(drivers pico_stdlib hardware_dma hardware_pio hardware_spi)
-
-# Doomgeneric sources
-file(GLOB DOOMGENERIC_SOURCES src/heretic/*.c)
-
-# Exclude platform specific and replaced files
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*i_sdl.*\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*i_allegro.*\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*i_win.*\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*i_cdmus\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*i_flmusic\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*i_pcsound\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*i_oplmusic\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*d_dedicated\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*z_native\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*midifile\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*w_file_stdc\\.c$")
-list(FILTER DOOMGENERIC_SOURCES EXCLUDE REGEX ".*m_misc\\.c$")
-
-# Add back necessary i_*.c files
-# We need i_video.c, i_timer.c, i_input.c, i_sound.c, i_endoom.c
-list(APPEND DOOMGENERIC_SOURCES
-    src/pico/i_picosound.c
-    src/pico/i_oplmusic.c
-    src/midifile.c
-    src/opl/emu8950.c
-    src/opl/emuadpcm.c
-    src/opl/opl_api.c
-    src/opl/opl_pico.c
-    src/opl/slot_render.cpp
-)
-
-# Remove duplicates
-list(REMOVE_DUPLICATES DOOMGENERIC_SOURCES)
-
-# add_executable(murmdoom
-#     src/main.c
-#     src/doomgeneric_rp2350.c
-#     src/doomgeneric_fatfs/w_file_fatfs.c
-#     src/doomgeneric_fatfs/m_misc_fatfs.c
-#     src/doomgeneric_fatfs/stdio_fatfs.c
-#     src/opl/slot_render_pico.S
-#     ${DOOMGENERIC_SOURCES}
-# )
-
-# target_include_directories(murmdoom PRIVATE
-#     src
-#     src/heretic
-#     src/pico
-#     src/fatfs
-#     src/opl
-#     drivers
-#     drivers/sdcard
-#     drivers/ps2mouse
-#     # drivers/usbhid is added conditionally by usbhid library
-# )
-
-# target_compile_definitions(murmdoom PRIVATE
-#     BOARD_${BOARD_VARIANT}
-#     CPU_CLOCK_MHZ=${CPU_SPEED}
-#     CPU_VOLTAGE=${CPU_VOLTAGE}
-#     PSRAM_MAX_FREQ_MHZ=${PSRAM_SPEED}
-#     CMAP256
-#     DOOMGENERIC_RESX=320
-#     DOOMGENERIC_RESY=240
-#     FEATURE_SOUND  # Enable sound support
-#     USE_PICO_SOUND  # Use Pico audio i2s backend
-#     USE_OPL_MUSIC=1  # Enable OPL music
-#     USE_EMU8950_OPL=1  # Use emu8950 OPL emulator
-#     PICO_AUDIO_I2S_PIO=1
-#     PICO_AUDIO_I2S_STATE_MACHINE=2
-#     PICO_AUDIO_I2S_DMA_IRQ=1
-#     NUM_SOUND_CHANNELS=16
-#     NO_USE_LIBSAMPLERATE
-#     NO_USE_TIMIDITY
-#     NO_USE_GUS
-#     NO_USE_MUSIC_PACKS
-#     USE_DIRECT_MIDI_LUMP=0  # Use file-based MIDI (works, uses PSRAM allocation)
-#     # EMU8950 optimizations from rp2040-doom
-#     EMU8950_NO_WAVE_TABLE_MAP=1
-#     EMU8950_NO_TLL=1
-#     EMU8950_NO_FLOAT=1
-#     EMU8950_NO_TIMER=1
-#     EMU8950_NO_TEST_FLAG=1
-#     EMU8950_SIMPLER_NOISE=1
-#     EMU8950_SHORT_NOISE_UPDATE_CHECK=1
-#     EMU8950_LINEAR_SKIP=1
-#     EMU8950_LINEAR_END_OF_NOTE_OPTIMIZATION=1
-#     EMU8950_NO_PERCUSSION_MODE=1
-#     EMU8950_LINEAR=1
-#     EMU8950_ASM=1
-#     EMU8950_SLOT_RENDER=1
-#     EMU8950_NO_RATECONV=1
-#     PICO_ON_DEVICE=1
-# )
-
-# Set peripheral pins based on board variant
-# if(BOARD_VARIANT STREQUAL "M1")
-#     target_compile_definitions(murmdoom PRIVATE
-#         # I2S Audio
-#         PICO_AUDIO_I2S_DATA_PIN=26
-#         PICO_AUDIO_I2S_CLOCK_PIN_BASE=27
-#         # SD Card
-#         SDCARD_PIN_SPI0_CS=5
-#         SDCARD_PIN_SPI0_SCK=2
-#         SDCARD_PIN_SPI0_MOSI=3
-#         SDCARD_PIN_SPI0_MISO=4
-#     )
-# elseif(BOARD_VARIANT STREQUAL "M2")
-#     target_compile_definitions(murmdoom PRIVATE
-#         # I2S Audio
-#         PICO_AUDIO_I2S_DATA_PIN=9
-#         PICO_AUDIO_I2S_CLOCK_PIN_BASE=10
-#         # SD Card
-#         SDCARD_PIN_SPI0_CS=5
-#         SDCARD_PIN_SPI0_SCK=6
-#         SDCARD_PIN_SPI0_MOSI=7
-#         SDCARD_PIN_SPI0_MISO=4
-#     )
-# endif()
-
-# target_link_libraries(murmdoom
-#     pico_stdlib
-#     pico_multicore
-#     pico_audio_i2s
-#     hardware_spi
-#     hardware_dma
-#     hardware_pio
-#     hardware_pwm
-#     hardware_irq
-#     hardware_interp
-#     sdcard
-#     ps2kbd
-#     ps2mouse
-#     usbhid
-#     fatfs
-#     drivers
-# )
-
-# Wrap stdio functions to use FatFS
-# target_link_options(murmdoom PRIVATE
-#     -Wl,--wrap=fopen
-#     -Wl,--wrap=fclose
-#     -Wl,--wrap=fread
-#     -Wl,--wrap=fgetc
-#     -Wl,--wrap=fwrite
-#     -Wl,--wrap=fseek
-#     -Wl,--wrap=ftell
-#     -Wl,--wrap=remove
-#     -Wl,--wrap=rename
-# )
-
-# USB stdio configuration
-# When USB HID is enabled, USB is used for Host mode (keyboard/mouse),
-# so USB CDC stdio is not available. Use UART for debug output instead.
-# if(USB_HID_ENABLED)
-#     message(STATUS "USB HID enabled: Using UART for stdio (USB is Host mode)")
-#     pico_enable_stdio_usb(murmdoom 0)
-#     pico_enable_stdio_uart(murmdoom 1)
-# else()
-#     pico_enable_stdio_usb(murmdoom 1)
-#     pico_enable_stdio_uart(murmdoom 0)
-# endif()
-# 
-# pico_add_extra_outputs(murmdoom)
 
 # =============================================================================
 # Heretic Build
@@ -276,8 +101,12 @@ add_executable(murmheretic
     src/doomgeneric_fatfs/m_misc_fatfs.c
     src/doomgeneric_fatfs/stdio_fatfs.c
     src/opl/slot_render_pico.S
+    src/pico/audio.c
     ${HERETIC_SOURCES}
 )
+
+# Generate PIO header for I2S audio (must be after add_executable)
+add_subdirectory(drivers/audio)
 
 target_include_directories(murmheretic PRIVATE
     src
@@ -305,9 +134,6 @@ target_compile_definitions(murmheretic PRIVATE
     USE_PICO_SOUND
     USE_OPL_MUSIC=1
     USE_EMU8950_OPL=1
-    PICO_AUDIO_I2S_PIO=1
-    PICO_AUDIO_I2S_STATE_MACHINE=2
-    PICO_AUDIO_I2S_DMA_IRQ=1
     NUM_SOUND_CHANNELS=16
     NO_USE_LIBSAMPLERATE
     NO_USE_TIMIDITY
@@ -362,7 +188,7 @@ endif()
 target_link_libraries(murmheretic
     pico_stdlib
     pico_multicore
-    pico_audio_i2s
+    hardware_clocks
     hardware_spi
     hardware_dma
     hardware_pio
