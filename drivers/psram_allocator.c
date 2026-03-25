@@ -98,7 +98,7 @@ void *psram_malloc(size_t size) {
 
     if (psram_temp_mode) {
         if (psram_temp_offset + total_size > TEMP_SIZE) {
-            // printf("PSRAM Temp OOM! Req %d, free %d\n", (int)size, (int)(TEMP_SIZE - psram_temp_offset));
+            printf("PSRAM Temp OOM! Req %d, free %d\n", (int)size, (int)(TEMP_SIZE - psram_temp_offset));
             spin_unlock(psram_lock, save);
             return NULL;
         }
@@ -110,7 +110,7 @@ void *psram_malloc(size_t size) {
         return ptr;
     } else {
         if (psram_offset + total_size > PERM_SIZE) {
-            // printf("PSRAM Perm OOM! Req %d, free %d\n", (int)size, (int)(PERM_SIZE - psram_offset));
+            printf("PSRAM Perm OOM! Req %d, free %d\n", (int)size, (int)(PERM_SIZE - psram_offset));
             spin_unlock(psram_lock, save);
             return NULL;
         }

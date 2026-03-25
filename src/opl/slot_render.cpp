@@ -8,10 +8,10 @@
 
 #if PICO_ON_DEVICE
 #include "hardware/interp.h"
-#define SLOT_RENDER_DATA __scratch_y("slot_render_cpp")
-#else
-#define SLOT_RENDER_DATA
 #endif
+// Keep lookup tables in regular RAM to avoid competing with the stack
+// in the 4KB SCRATCH_Y region on RP2350.
+#define SLOT_RENDER_DATA
 
 static_assert(PM_DPHASE > 0, "");
 

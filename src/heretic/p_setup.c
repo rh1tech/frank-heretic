@@ -618,10 +618,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     leveltime = 0;
 
     lumpnum = W_GetNumForName(lumpname);
-
     maplumpinfo = lumpinfo[lumpnum];
 
-// note: most of this ordering is important     
+// note: most of this ordering is important
     P_LoadBlockMap(lumpnum + ML_BLOCKMAP);
     P_LoadVertexes(lumpnum + ML_VERTEXES);
     P_LoadSectors(lumpnum + ML_SECTORS);
