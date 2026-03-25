@@ -257,19 +257,14 @@ void OPL_Pico_Mix_callback(audio_buffer_t *audio_buffer)
                 // OPL outputs 32-bit samples but audio buffer expects 16-bit
                 // Use file-scope buffer to avoid any stack/corruption issues
                 OPL_calc_buffer_stereo(emu8950_opl, opl_temp_buffer, nsamples);
-                
-                // Convert 32-bit packed stereo to 16-bit separate L/R channels
-                // OPL_calc_buffer_stereo writes: buffer[i] = (left << 16) | right
-                // where left and right are the same (mono duplicated to stereo)
+
+                // Extract mono sample from packed stereo (both halves identical)
                 int16_t *buffer_start = (int16_t *)audio_buffer->buffer->bytes;
-                int16_t *sndptr16 = buffer_start + (filled * 2); // filled samples × 2 channels
+                int16_t *sndptr16 = buffer_start + (filled * 2);
                 for (unsigned int i = 0; i < nsamples; i++) {
-                    // Each opl_temp_buffer[i] contains both channels packed
-                    int32_t packed = opl_temp_buffer[i];
-                    int16_t left = (int16_t)(packed >> 16);
-                    int16_t right = (int16_t)(packed & 0xFFFF);
-                    sndptr16[i * 2] = left;
-                    sndptr16[i * 2 + 1] = right;
+                    int16_t sample = (int16_t)(opl_temp_buffer[i] & 0xFFFF);
+                    sndptr16[i * 2] = sample;
+                    sndptr16[i * 2 + 1] = sample;
                 }
             }
 #else

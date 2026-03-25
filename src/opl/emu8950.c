@@ -1883,9 +1883,11 @@ void OPL_calc_buffer_stereo(OPL *opl, int32_t *buffer, uint32_t nsamples) {
         }
         printf("\n");
 #else
-        uint16_t raw = buffer[i] >> 1; // _MO()
+        int32_t sum = buffer[i] >> 1;
+        if (sum > 32767) sum = 32767;
+        else if (sum < -32768) sum = -32768;
+        uint16_t raw = (uint16_t)(int16_t)sum;
 #endif
-        // todo clamp?
         buffer[i] = (raw << 16u) | raw;
     }
 #endif

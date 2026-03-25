@@ -1,2 +1,2 @@
 #!/bin/bash
-picotool load ./build/murmheretic.elf -f && picotool reboot
+picotool load ./build/frank-heretic.elf -f && picotool reboot

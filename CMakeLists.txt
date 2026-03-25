@@ -26,7 +26,7 @@ message(STATUS "Board: ${BOARD_VARIANT}, CPU: ${CPU_SPEED} MHz, PSRAM: ${PSRAM_S
 
 include(pico_sdk_import.cmake)
 
-project(murmheretic C CXX ASM)
+project(frank-heretic C CXX ASM)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 
@@ -94,13 +94,12 @@ list(APPEND HERETIC_SOURCES
 # Remove duplicates
 list(REMOVE_DUPLICATES HERETIC_SOURCES)
 
-add_executable(murmheretic
+add_executable(frank-heretic
     src/main.c
     src/doomgeneric_rp2350.c
     src/doomgeneric_fatfs/w_file_fatfs.c
     src/doomgeneric_fatfs/m_misc_fatfs.c
     src/doomgeneric_fatfs/stdio_fatfs.c
-    src/opl/slot_render_pico.S
     src/pico/audio.c
     ${HERETIC_SOURCES}
 )
@@ -108,7 +107,7 @@ add_executable(murmheretic
 # Generate PIO header for I2S audio (must be after add_executable)
 add_subdirectory(drivers/audio)
 
-target_include_directories(murmheretic PRIVATE
+target_include_directories(frank-heretic PRIVATE
     src
     src/heretic
     src/pico
@@ -119,9 +118,9 @@ target_include_directories(murmheretic PRIVATE
     drivers/ps2mouse
 )
 
-target_compile_options(murmheretic PRIVATE -Ofast)
+target_compile_options(frank-heretic PRIVATE -Ofast)
 
-target_compile_definitions(murmheretic PRIVATE
+target_compile_definitions(frank-heretic PRIVATE
     HERETIC=1
     BOARD_${BOARD_VARIANT}
     CPU_CLOCK_MHZ=${CPU_SPEED}
@@ -151,18 +150,18 @@ target_compile_definitions(murmheretic PRIVATE
     EMU8950_LINEAR_END_OF_NOTE_OPTIMIZATION=1
     EMU8950_NO_PERCUSSION_MODE=1
     EMU8950_LINEAR=1
-    EMU8950_ASM=1
+    EMU8950_ASM=0
     EMU8950_SLOT_RENDER=1
     EMU8950_NO_RATECONV=1
     PICO_ON_DEVICE=1
     HERETIC=1
 )
 
-target_link_options(murmheretic PRIVATE -Wl,-Map=murmheretic.map)
+target_link_options(frank-heretic PRIVATE -Wl,-Map=frank-heretic.map)
 
 # Set peripheral pins based on board variant
 if(BOARD_VARIANT STREQUAL "M1")
-    target_compile_definitions(murmheretic PRIVATE
+    target_compile_definitions(frank-heretic PRIVATE
         # I2S Audio
         PICO_AUDIO_I2S_DATA_PIN=26
         PICO_AUDIO_I2S_CLOCK_PIN_BASE=27
@@ -173,7 +172,7 @@ if(BOARD_VARIANT STREQUAL "M1")
         SDCARD_PIN_SPI0_MISO=4
     )
 elseif(BOARD_VARIANT STREQUAL "M2")
-    target_compile_definitions(murmheretic PRIVATE
+    target_compile_definitions(frank-heretic PRIVATE
         # I2S Audio
         PICO_AUDIO_I2S_DATA_PIN=9
         PICO_AUDIO_I2S_CLOCK_PIN_BASE=10
@@ -185,7 +184,7 @@ elseif(BOARD_VARIANT STREQUAL "M2")
     )
 endif()
 
-target_link_libraries(murmheretic
+target_link_libraries(frank-heretic
     pico_stdlib
     pico_multicore
     hardware_clocks
@@ -204,7 +203,7 @@ target_link_libraries(murmheretic
 )
 
 # Wrap stdio
-target_link_options(murmheretic PRIVATE
+target_link_options(frank-heretic PRIVATE
     -Wl,--wrap=fopen
     -Wl,--wrap=fclose
     -Wl,--wrap=fread
@@ -218,11 +217,11 @@ target_link_options(murmheretic PRIVATE
 
 # USB stdio
 if(USB_HID_ENABLED)
-    pico_enable_stdio_usb(murmheretic 0)
-    pico_enable_stdio_uart(murmheretic 1)
+    pico_enable_stdio_usb(frank-heretic 0)
+    pico_enable_stdio_uart(frank-heretic 1)
 else()
-    pico_enable_stdio_usb(murmheretic 1)
-    pico_enable_stdio_uart(murmheretic 0)
+    pico_enable_stdio_usb(frank-heretic 1)
+    pico_enable_stdio_uart(frank-heretic 0)
 endif()
 
-pico_add_extra_outputs(murmheretic)
+pico_add_extra_outputs(frank-heretic)

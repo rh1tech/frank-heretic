@@ -102,7 +102,7 @@ int M_ReadFile(const char *name, byte **buffer)
 
 char *M_TempFile(const char *s)
 {
-    char *tempdir = ""; // Use root of SD card
+    char *tempdir = "heretic/";
     return M_StringJoin(tempdir, s, NULL);
 }
 

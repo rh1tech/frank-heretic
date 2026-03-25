@@ -1418,6 +1418,15 @@ void RestartSong(void *unused)
 #endif
     unsigned int i;
 
+    // Silence the OPL chip completely before restarting the song.
+    // AllNotesOff only triggers release envelopes; OPL_InitRegisters
+    // zeroes every register so no voice carries over into the new loop.
+    for (i = 0; i < MIDI_CHANNELS_PER_TRACK; ++i)
+    {
+        AllNotesOff(&channels[i], 0);
+    }
+    OPL_InitRegisters(opl_opl3mode);
+
     running_tracks = num_tracks;
 
     start_music_volume = current_music_volume;

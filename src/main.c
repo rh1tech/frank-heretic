@@ -1,5 +1,5 @@
 /*
- * HERETIC - RP2350 Port (murmheretic)
+ * HERETIC - RP2350 Port (frank-heretic)
  * Main entry point with overclocking support
  */
 #include "doomgeneric.h"
@@ -59,7 +59,7 @@ int main() {
         sleep_ms(500);
     }
     
-    printf("murmheretic - Heretic for RP2350\n");
+    printf("frank-heretic - Heretic for RP2350\n");
     printf("System Clock: %lu MHz\n", clock_get_hz(clk_sys) / 1000000);
     printf("Starting Heretic...\n");
 

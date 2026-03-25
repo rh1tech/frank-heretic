@@ -1,4 +1,4 @@
-# MurmHeretic
+# frank-heretic
 
 Heretic for Raspberry Pi Pico 2 (RP2350) with HDMI output, SD card, PS/2 or USB keyboard/mouse, and OPL music.
 
@@ -6,8 +6,8 @@ Heretic for Raspberry Pi Pico 2 (RP2350) with HDMI output, SD card, PS/2 or USB 
 
 This firmware is designed for the following RP2350-based boards with integrated HDMI, SD card, PS/2 (or USB), and PSRAM:
 
-- **[Murmulator](https://murmulator.ru)** — A compact retro-computing platform based on RP Pico 2, designed for emulators and classic games.
 - **[FRANK](https://rh1.tech/projects/frank?area=about)** — A versatile development board based on RP Pico 2, HDMI output, and extensive I/O options.
+- **[Murmulator](https://murmulator.ru)** — A compact retro-computing platform based on RP Pico 2, designed for emulators and classic games.
 
 Both boards provide all necessary peripherals out of the box—no additional wiring required.
 
@@ -31,7 +31,7 @@ Both boards provide all necessary peripherals out of the box—no additional wir
 
 ### PSRAM Options
 
-MurmHeretic requires 8MB PSRAM to run. You can obtain PSRAM-equipped hardware in several ways:
+Frank-Heretic requires 8MB PSRAM to run. You can obtain PSRAM-equipped hardware in several ways:
 
 1. **Solder a PSRAM chip** on top of the Flash chip on a Pico 2 clone (SOP-8 flash chips are only available on clones, not the original Pico 2)
 2. **Build a [Nyx 2](https://rh1.tech/projects/nyx?area=nyx2)** — a DIY RP2350 board with integrated PSRAM
@@ -93,12 +93,9 @@ Two GPIO layouts are supported: **M1** and **M2**. The PSRAM pin is auto-detecte
 ### Build Steps
 
 ```bash
-# Clone the repository with submodules
-git clone --recursive https://github.com/rh1tech/murmheretic.git
-cd murmheretic
-
-# Or if already cloned, initialize submodules
-git submodule update --init --recursive
+# Clone the repository
+git clone https://github.com/rh1tech/frank-heretic.git
+cd frank-heretic
 
 # Build for M1 layout (default)
 mkdir build && cd build
@@ -134,17 +131,17 @@ To build both M1 and M2 variants with version numbering:
 ```
 
 This creates versioned UF2 files in the `release/` directory:
-- `murmheretic_m1_X_XX.uf2`
-- `murmheretic_m2_X_XX.uf2`
+- `frank-heretic_m1_X_XX.uf2`
+- `frank-heretic_m2_X_XX.uf2`
 
 ### Flashing
 
 ```bash
 # With device in BOOTSEL mode:
-picotool load build/murmheretic.uf2
+picotool load build/frank-heretic.uf2
 
 # Or with device running:
-picotool load -f build/murmheretic.uf2
+picotool load -f build/frank-heretic.uf2
 ```
 
 ## SD Card Setup
@@ -192,7 +189,7 @@ This project is based on:
 
 ## Author
 
-Mikhail Matveev <xtreme@outlook.com>
+Mikhail Matveev <xtreme@rh1.tech>
 
 ## Acknowledgments
 
