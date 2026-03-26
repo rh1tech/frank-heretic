@@ -24,6 +24,11 @@ endif()
 
 message(STATUS "Board: ${BOARD_VARIANT}, CPU: ${CPU_SPEED} MHz, PSRAM: ${PSRAM_SPEED} MHz, Voltage: ${CPU_VOLTAGE}")
 
+# Inject version.txt as a compile-time string.
+file(READ "${CMAKE_CURRENT_LIST_DIR}/version.txt" FRANK_HERETIC_VERSION_RAW)
+string(STRIP "${FRANK_HERETIC_VERSION_RAW}" FRANK_HERETIC_VERSION_RAW)
+string(REGEX REPLACE "[ \t]+" "." FRANK_HERETIC_VERSION "${FRANK_HERETIC_VERSION_RAW}")
+
 include(pico_sdk_import.cmake)
 
 project(frank-heretic C CXX ASM)
@@ -155,6 +160,7 @@ target_compile_definitions(frank-heretic PRIVATE
     EMU8950_NO_RATECONV=1
     PICO_ON_DEVICE=1
     HERETIC=1
+    FRANK_HERETIC_VERSION="${FRANK_HERETIC_VERSION}"
 )
 
 target_link_options(frank-heretic PRIVATE -Wl,-Map=frank-heretic.map)

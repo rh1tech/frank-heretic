@@ -42,6 +42,13 @@ int usbhid_wrapper_keyboard_connected(void);
  */
 int usbhid_wrapper_mouse_connected(void);
 
+/**
+ * Get next key event from USB HID keyboard (polling mode).
+ * Used before the game engine starts (e.g. WAD selector screen).
+ * @return 1 if a key event was available, 0 otherwise
+ */
+int usbhid_wrapper_get_key(int *pressed, unsigned char *key);
+
 #else // !USB_HID_ENABLED
 
 // Stub functions when USB HID is disabled
@@ -49,6 +56,7 @@ static inline void usbhid_wrapper_init(void) {}
 static inline void usbhid_wrapper_tick(void) {}
 static inline int usbhid_wrapper_keyboard_connected(void) { return 0; }
 static inline int usbhid_wrapper_mouse_connected(void) { return 0; }
+static inline int usbhid_wrapper_get_key(int *pressed, unsigned char *key) { (void)pressed; (void)key; return 0; }
 
 #endif // USB_HID_ENABLED
 
